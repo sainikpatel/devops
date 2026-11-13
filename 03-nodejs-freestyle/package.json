@@ -1,0 +1,9 @@
+{
+  "name": "node-project",
+  "version": "1.0.0",
+  "description": "Simple Node.js CI project for Jenkins lab",
+  "main": "app.js",
+  "scripts": {
+    "test": "node --test"
+  }
+}

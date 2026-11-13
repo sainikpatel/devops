@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/YOUR_USERNAME/PythonPipelineProject.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'python3 -m pip install -r requirements.txt'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'python3 -m compileall -q app.py test_app.py'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'python3 -m pytest -q --junitxml=test-results.xml'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mkdir -p dist'
+                sh 'python3 -m zipfile -c dist/PythonPipelineProject.zip app.py'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Python Build Successful!'
+            archiveArtifacts artifacts: 'dist/*.zip'
+        }
+        always {
+            junit 'test-results.xml'
+        }
+    }
+}
